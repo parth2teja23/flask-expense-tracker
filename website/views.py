@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from .models import Expense, db
 
@@ -31,24 +31,30 @@ def home():
 @login_required
 def edit_expense(id):
     expense = Expense.query.get(id)
-    if expense and expense.user_id == current_user.id:
-        expense.description = request.form.get("description")
-        expense.amount = float(request.form.get("amount"))
-        expense.category = request.form.get("category")
-        db.session.commit()
-        flash("Expense updated successfully!", category="success")
-    else:
+
+    if not expense or expense.user_id != current_user.id:
         flash("Unauthorized action!", category="error")
+        return redirect(url_for("views.home"))
+
+    # Get new values from the form
+    expense.description = request.form.get("description")
+    expense.amount = float(request.form.get("amount"))
+    expense.category = request.form.get("category")
+
+    db.session.commit()
+    flash("Expense updated successfully!", category="success")
     return redirect(url_for("views.home"))
 
 @views.route("/delete-expense/<int:id>", methods=["POST"])
 @login_required
 def delete_expense(id):
     expense = Expense.query.get(id)
-    if expense and expense.user_id == current_user.id:
-        db.session.delete(expense)
-        db.session.commit()
-        flash("Expense deleted successfully!", category="success")
-    else:
+
+    if not expense or expense.user_id != current_user.id:
         flash("Unauthorized action!", category="error")
+        return redirect(url_for("views.home"))
+
+    db.session.delete(expense)
+    db.session.commit()
+    flash("Expense deleted successfully!", category="success")
     return redirect(url_for("views.home"))

@@ -16,7 +16,7 @@
 //   document.getElementById("editExpenseId").value = id;
 //   document.getElementById("editDescription").value = description;
 //   document.getElementById("editAmount").value = amount;
-//   document.getElementById("editCategory").value = category;
+// //   document.getElementById("editCategory").value = category;
 //   $("#editModal").modal("show");  // Bootstrap modal
 // }
 
